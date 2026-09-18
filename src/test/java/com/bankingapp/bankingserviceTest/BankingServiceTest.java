@@ -1,15 +1,17 @@
 package com.bankingapp.bankingserviceTest;
 
+import com.bankingapp.exception.AccountNotFoundException;
 import com.bankingapp.exception.InvalidAmountException;
 import com.bankingapp.model.Account;
+import com.bankingapp.model.Transaction;
+import com.bankingapp.model.TransactionType;
 import com.bankingapp.repository.AccountRepository;
 import com.bankingapp.service.BankingService;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class BankingServiceTest {
 
@@ -79,4 +81,51 @@ class BankingServiceTest {
                 bankingService.getBalance("ACC003")
         );
     }
+
+    @Test
+    void shouldRejectZeroDeposit() {
+        bankingService.createAccount("ACC004", new BigDecimal("1000"));
+
+        assertThrows(
+                InvalidAmountException.class,
+                () -> bankingService.deposit("ACC004", BigDecimal.ZERO)
+        );
+    }
+
+    @Test
+    void shouldRejectNegativeDeposit() {
+        bankingService.createAccount("ACC005", new BigDecimal("1000"));
+
+        assertThrows(
+                InvalidAmountException.class,
+                () -> bankingService.deposit("ACC005", new BigDecimal("-100"))
+        );
+    }
+
+    @Test
+    void shouldRejectDepositForUnknownAccount() {
+        assertThrows(
+                AccountNotFoundException.class,
+                () -> bankingService.deposit("UNKNOWN", new BigDecimal("500"))
+        );
+    }
+
+    @Test
+    void shouldRecordDepositTransaction() {
+        bankingService.createAccount("ACC006", new BigDecimal("1000"));
+
+        bankingService.deposit("ACC006", new BigDecimal("500"));
+
+        Account account = accountRepository.findById("ACC006").orElseThrow();
+
+        assertEquals(1, account.getTransactions().size());
+
+        Transaction transaction = account.getTransactions().get(0);
+
+        assertEquals(TransactionType.DEPOSIT, transaction.getType());
+        assertEquals(new BigDecimal("500"), transaction.getAmount());
+        assertNotNull(transaction.getTransactionId());
+        assertNotNull(transaction.getTimestamp());
+    }
+    
 }
