@@ -20,7 +20,7 @@ class BankingServiceTest {
             new BankingService(accountRepository);
 
     @Test
-    void shouldCreateAccount() {
+    void createAccount() {
 
         Account account = bankingService.createAccount(
                 "ACC001",
@@ -34,7 +34,7 @@ class BankingServiceTest {
         );
     }
     @Test
-    void shouldRejectDuplicateAccountId() {
+    void rejectDuplicateAccountId() {
 
         bankingService.createAccount(
                 "ACC001",
@@ -50,7 +50,7 @@ class BankingServiceTest {
         );
     }
     @Test
-    void shouldRejectNegativeInitialBalance() {
+    void rejectNegativeInitialBalance() {
 
         assertThrows(
                 InvalidAmountException.class,
@@ -62,7 +62,7 @@ class BankingServiceTest {
     }
 
     @Test
-    void shouldDepositMoney() {
+    void depositMoney() {
 
         bankingService.createAccount(
                 "ACC003",
