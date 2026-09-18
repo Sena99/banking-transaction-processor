@@ -1,4 +1,8 @@
 package com.bankingapp.model;
 
-public class TransactionType {
+public enum TransactionType {
+
+    DEPOSIT,
+    WITHDRAWAL,
+    TRANSFER
 }
