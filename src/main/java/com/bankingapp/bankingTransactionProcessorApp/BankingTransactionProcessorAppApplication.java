@@ -8,6 +8,8 @@ public class BankingTransactionProcessorAppApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BankingTransactionProcessorAppApplication.class, args);
+
+		System.out.println("Banking Transaction Processor Application Started");
 	}
 
 }
