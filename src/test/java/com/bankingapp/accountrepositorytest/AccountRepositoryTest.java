@@ -1,4 +1,4 @@
-package com.bankingapp.accountrepositoryTest;
+package com.bankingapp.accountrepositorytest;
 
 import com.bankingapp.model.Account;
 import com.bankingapp.repository.AccountRepository;

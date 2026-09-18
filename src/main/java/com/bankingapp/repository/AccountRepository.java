@@ -1,11 +1,12 @@
 package com.bankingapp.repository;
 
 import com.bankingapp.model.Account;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
+@Repository
 public class AccountRepository {
 
     private final Map<String, Account> accounts = new HashMap<>();

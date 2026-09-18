@@ -7,10 +7,11 @@ import com.bankingapp.model.Account;
 import com.bankingapp.model.Transaction;
 import com.bankingapp.model.TransactionType;
 import com.bankingapp.repository.AccountRepository;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-
+@Service
 public class BankingService {
     private AccountRepository accountRepository;
     public BankingService(AccountRepository accountRepository) {

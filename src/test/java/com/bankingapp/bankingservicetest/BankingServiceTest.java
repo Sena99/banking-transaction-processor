@@ -1,4 +1,4 @@
-package com.bankingapp.bankingserviceTest;
+package com.bankingapp.bankingservicetest;
 
 import com.bankingapp.exception.AccountNotFoundException;
 import com.bankingapp.exception.InsufficientBalanceException;
@@ -373,6 +373,8 @@ class BankingServiceTest {
                 () -> bankingService.getTransactionHistory("UNKNOWN")
         );
     }
+
+
 }
 
 
