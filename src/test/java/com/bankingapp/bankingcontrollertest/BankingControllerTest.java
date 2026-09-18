@@ -2,6 +2,9 @@ package com.bankingapp.bankingcontrollertest;
 
 
 import com.bankingapp.controller.BankingController;
+import com.bankingapp.exception.AccountNotFoundException;
+import com.bankingapp.exception.InsufficientBalanceException;
+import com.bankingapp.exception.InvalidAmountException;
 import com.bankingapp.model.Account;
 import com.bankingapp.model.Transaction;
 import com.bankingapp.model.TransactionType;
@@ -11,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
@@ -135,5 +140,58 @@ class BankingControllerTest {
                             """)
                 )
                 .andExpect(status().isOk());
+    }
+    @Test
+    void shouldReturn404WhenAccountNotFound() throws Exception {
+
+        when(bankingService.getBalance("UNKNOWN"))
+                .thenThrow(new AccountNotFoundException("UNKNOWN"));
+
+        mockMvc.perform(
+                        get("/api/accounts/UNKNOWN/balance")
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Account not found: UNKNOWN"));
+    }
+    @Test
+    void shouldReturn400WhenDepositAmountIsInvalid() throws Exception {
+
+        doThrow(new InvalidAmountException())
+                .when(bankingService)
+                .deposit("ACC100", new BigDecimal("-100"));
+
+        mockMvc.perform(
+                        post("/api/accounts/ACC100/deposit")
+                                .contentType("application/json")
+                                .content("""
+                            {
+                                "amount": -100
+                            }
+                            """)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(
+                        "Transaction amount must be greater than zero"
+                ));
+    }
+
+    @Test
+    void shouldReturn400WhenBalanceIsInsufficient() throws Exception {
+
+        doThrow(new InsufficientBalanceException())
+                .when(bankingService)
+                .withdraw("ACC100", new BigDecimal("5000"));
+
+        mockMvc.perform(
+                        post("/api/accounts/ACC100/withdraw")
+                                .contentType("application/json")
+                                .content("""
+                            {
+                                "amount": 5000
+                            }
+                            """)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Insufficient balance"));
     }
 }
